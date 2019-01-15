@@ -1,80 +1,35 @@
-import React, { useState } from 'react';
-import SceneManager from './ThreeJSManager';
-import Cube from './example/Cube';
-import Grid from './example/Grid';
-import CameraControls from './example/CameraControls';
+import React from 'react';
 import {
-  getCamera,
-  getRenderer,
-  getScene,
-} from './example/threeSetup';
+  BrowserRouter as Router,
+  Route, 
+  Link,
+} from "react-router-dom";
+import CubeExample from './example-cube/CubeExample';
+import GameContainer from './example-asteroids/GameContainer';
 
-function App() {
-  const [color, changeColor] = useState('0000ff');
-  const [showGrid, toggleShowGrid] = useState(true);
-  const [showCube, toggleShowCube] = useState(true);
-
-  return (
+const App = () =>
+  <Router>
     <>
-      <SceneManager
-        getCamera={getCamera}
-        getRenderer={getRenderer}
-        getScene={getScene}
-      >
-        {
-          showGrid &&
-          <Grid />
+      <Route
+        exact 
+        path='/' 
+        render={() => 
+          <div className='foo'>
+            <h2>Examples:</h2>
+            <div><Link to='/cube'>Cube</Link></div>
+            <div><Link to='/asteroids'>Asteroids</Link></div>
+          </div>
         }
-        {
-          showCube &&
-            <Cube
-              color={Number(`0x${color}`)}
-            />
-          }
-        <CameraControls />
-      </SceneManager>
-
-      <div
-        style={{
-          width: '100px',
-          padding: '10px',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          <input
-            type='text'
-            placeholder='enter a hex color'
-            onChange={(e) =>
-              changeColor(e.target.value)
-            }
-          />
-
-          <label>
-            <input
-              type='checkbox'
-              checked={showGrid}
-              onChange={() => toggleShowGrid(!showGrid)}
-            />
-            show grid
-          </label>
-
-          <label>
-            <input
-              type='checkbox'
-              checked={showCube}
-              onChange={() => toggleShowCube(!showCube)}
-            />
-            show cube
-          </label>
-        </div>
-      </div>
+        />
+      <Route
+        path="/cube" 
+        component={CubeExample} 
+        />
+      <Route
+        path="/asteroids"
+        component={GameContainer} 
+        />
     </>
-  );
-}
+  </Router>
 
 export default App;

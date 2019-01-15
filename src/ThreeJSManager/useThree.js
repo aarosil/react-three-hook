@@ -5,7 +5,9 @@ import {
 } from 'react';
 import { ThreeJSContext } from './ThreeJSManager';
 
-const useThree = (setup, destroy) => {
+const noop = () => {};
+
+const useThree = (setup = noop, destroy) => {
   const entityRef = useRef();
   const context = useContext(ThreeJSContext);
 

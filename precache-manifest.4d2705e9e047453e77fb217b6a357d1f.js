@@ -16,7 +16,7 @@ self.__precacheManifest = [
     "url": "/react-three-hook/static/js/runtime~main.986369e5.js"
   },
   {
-    "revision": "4016de148da6a7d77c36f994eba6ac9b",
+    "revision": "8271448d154a883e371b496ebe9a4d49",
     "url": "/react-three-hook/index.html"
   }
 ];

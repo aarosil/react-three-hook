@@ -1,8 +1,10 @@
 {
-  "name": "3dtunnel",
+  "name": "react-three-hook",
+  "homepage": "https://aarosil.github.io/react-three-hook",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "gh-pages": "^2.0.1",
     "orbit-controls-es6": "^2.0.0",
     "react": "16.7.0-alpha.2",
     "react-dom": "16.7.0-alpha.2",
@@ -14,7 +16,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "yarn run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": "react-app"

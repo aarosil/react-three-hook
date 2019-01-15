@@ -8,7 +8,7 @@ import CubeExample from './example-cube/CubeExample';
 import GameContainer from './example-asteroids/GameContainer';
 
 const App = () =>
-  <Router>
+  <Router basename={process.env.PUBLIC_URL}>
     <>
       <Route
         exact 

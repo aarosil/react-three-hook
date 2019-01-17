@@ -1,9 +1,10 @@
 import { useThree } from '../../../ThreeJSManager';
-import { 
-  useEffect, 
-  useReducer, 
+import { useKnobs } from '../useKnobs';
+import {
+  useEffect,
+  useReducer,
   useRef,
-} from 'react'; 
+} from 'react';
 import {
   generateLaserbeam,
   makeBoundingBoxFromCamera,
@@ -11,20 +12,28 @@ import {
   setupAsteroids,
 } from './useAsteroidsGameUtil';
 
+const DIMINISH_STRENGTH_PERCENTAGE = 0.5;
+const RECHARGE_RATE_PERCENTAGE = 0.02;
+
 const useAsteroidsGame = ({ asteroidCount }) => {
   const {
-    scene, 
-    timer, 
+    scene,
+    timer,
     camera,
   } = useThree();
 
   const boundingBoxRef = useRef(makeBoundingBoxFromCamera(camera));
-  
+
+  const [values, knobs] = useKnobs({
+    RECHARGE_RATE_PERCENTAGE,
+    DIMINISH_STRENGTH_PERCENTAGE,
+  });
+
   const [{ laserbeams, asteroids, laserStrength }, dispatch] = useReducer(
     (state, action) => {
       switch (action.type) {
         case 'SHOOT_LASER':
-          const updatedLaserbeams = state.laserStrength > 0.5
+          const updatedLaserbeams = state.laserStrength > values.DIMINISH_STRENGTH_PERCENTAGE
             ? [
               ...state.laserbeams,
               generateLaserbeam(action),
@@ -33,8 +42,8 @@ const useAsteroidsGame = ({ asteroidCount }) => {
           return {
             ...state,
             laserbeams: updatedLaserbeams,
-            laserStrength: state.laserStrength > 0.5
-              ? Math.max(0, state.laserStrength - 0.5)
+            laserStrength: state.laserStrength > values.DIMINISH_STRENGTH_PERCENTAGE
+              ? Math.max(0, state.laserStrength - values.DIMINISH_STRENGTH_PERCENTAGE)
               : state.laserStrength,
           };
         case 'ADVANCE_GAME':
@@ -42,12 +51,12 @@ const useAsteroidsGame = ({ asteroidCount }) => {
             laserbeams,
             asteroids,
           } = proceedGame(state);
-    
+
           return {
             ...state,
             laserbeams,
             asteroids,
-            laserStrength: Math.min(1, state.laserStrength + 0.02),
+            laserStrength: Math.min(1, state.laserStrength + values.RECHARGE_RATE_PERCENTAGE),
           };
         default:
           return state;
@@ -61,22 +70,23 @@ const useAsteroidsGame = ({ asteroidCount }) => {
       laserStrength: 1,
     },
   );
-  
+
   useEffect(
     () => dispatch({
       type: 'ADVANCE_GAME',
     }),
     [timer],
   );
-  
+
   return {
     laserbeams,
     asteroids,
     laserStrength,
-    shootLaser: (position, direction) => 
+    knobs,
+    shootLaser: (position, direction) =>
       dispatch({
-        type: 'SHOOT_LASER', 
-        position, 
+        type: 'SHOOT_LASER',
+        position,
         direction,
       }),
   };

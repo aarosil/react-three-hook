@@ -4,7 +4,6 @@ import Spaceship from './Spaceship';
 import Asteroid from './Asteroid';
 import Laserbeam from './Laserbeam';
 import useAsteroidsGame from './hooks/useAsteroidsGame';
-import LaserStrengthMeter from './LaserStrengthMeter'
 import {
   getCamera,
   getRenderer,
@@ -21,27 +20,27 @@ const GameContainer = () =>
   </SceneManager>
 
 const Game = ({ asteroidCount = 3}) => {
-  const { 
-    laserbeams, 
-    asteroids, 
+  const {
+    laserbeams,
+    asteroids,
     shootLaser,
     laserStrength,
   } = useAsteroidsGame({ asteroidCount });
 
   return (
     <>
-      <Spaceship 
+      <Spaceship
         shootLaser={shootLaser}
         laserStrength={laserStrength}
-      />
+        />
       {
         asteroids.map(props => (
           <Asteroid
-            key={props.uuid} 
+            key={props.uuid}
             {...props}
           />
-        ))
-      }
+          ))
+        }
       {
         laserbeams.map(props => (
           <Laserbeam
@@ -50,7 +49,6 @@ const Game = ({ asteroidCount = 3}) => {
           />
         ))
       }
-      <LaserStrengthMeter laserStrength={laserStrength} />
     </>
   );
 }

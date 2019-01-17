@@ -20,16 +20,22 @@ const useAsteroidsGame = ({ asteroidCount }) => {
 
   const boundingBoxRef = useRef(makeBoundingBoxFromCamera(camera));
   
-  const [{ laserbeams, asteroids }, dispatch] = useReducer(
+  const [{ laserbeams, asteroids, laserStrength }, dispatch] = useReducer(
     (state, action) => {
       switch (action.type) {
         case 'SHOOT_LASER':
-          return {
-            ...state,
-            laserbeams: [
+          const updatedLaserbeams = state.laserStrength > 0.5
+            ? [
               ...state.laserbeams,
               generateLaserbeam(action),
-            ],
+            ]
+            : state.laserbeams
+          return {
+            ...state,
+            laserbeams: updatedLaserbeams,
+            laserStrength: state.laserStrength > 0.5
+              ? Math.max(0, state.laserStrength - 0.5)
+              : state.laserStrength,
           };
         case 'ADVANCE_GAME':
           const {
@@ -41,6 +47,7 @@ const useAsteroidsGame = ({ asteroidCount }) => {
             ...state,
             laserbeams,
             asteroids,
+            laserStrength: Math.min(1, state.laserStrength + 0.02),
           };
         default:
           return state;
@@ -51,6 +58,7 @@ const useAsteroidsGame = ({ asteroidCount }) => {
       laserbeams: [],
       scene,
       boundingBox: boundingBoxRef.current,
+      laserStrength: 1,
     },
   );
   
@@ -64,6 +72,7 @@ const useAsteroidsGame = ({ asteroidCount }) => {
   return {
     laserbeams,
     asteroids,
+    laserStrength,
     shootLaser: (position, direction) => 
       dispatch({
         type: 'SHOOT_LASER', 

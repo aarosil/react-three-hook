@@ -75,7 +75,7 @@ const Spaceship = ({ shootLaser }) => {
     },
     [rotation],
   );
-
+  
   return null;
 }
 

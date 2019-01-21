@@ -14,19 +14,19 @@ export const setupMeter = ({ scene, camera }) => {
     new THREE.Vector3(0, 0, 0),
     new THREE.Vector3(METER_WIDTH, 0, 0),
   );
-  const meterOutline = new THREE.Line(meterOutlineGeometry, meterOutlineMaterial);
+  const meterOutline = new THREE.Line(
+    meterOutlineGeometry,
+    meterOutlineMaterial,
+  );
   meterOutline.position.x = right - METER_HEIGHT - METER_WIDTH;
-  meterOutline.position.y = top - (2 * METER_HEIGHT);
+  meterOutline.position.y = top - 2 * METER_HEIGHT;
 
-  const meterMaterial = new THREE.MeshBasicMaterial({ color: 0xFFFFFF });
+  const meterMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
   const meterGeometry = meterOutlineGeometry.clone();
-  meterGeometry.faces = [
-    new THREE.Face3(0, 1, 2),
-    new THREE.Face3(2,3,4)
-  ];
+  meterGeometry.faces = [new THREE.Face3(0, 1, 2), new THREE.Face3(2, 3, 4)];
   const meter = new THREE.Mesh(meterGeometry, meterMaterial);
-  meter.position.x = right - METER_HEIGHT - METER_WIDTH
-  meter.position.y = top - (2 * METER_HEIGHT)
+  meter.position.x = right - METER_HEIGHT - METER_WIDTH;
+  meter.position.y = top - 2 * METER_HEIGHT;
 
   scene.add(meterOutline);
   scene.add(meter);
@@ -37,9 +37,9 @@ export const setupMeter = ({ scene, camera }) => {
   };
 };
 
-export const destroyMeter = ({scene}, { meter, meterOutline }) => {
+export const destroyMeter = ({ scene }, { meter, meterOutline }) => {
   scene.remove(meter);
-  scene.remove(meterOutline)
+  scene.remove(meterOutline);
 };
 
 export const updateMeter = (entity, laserStrength) => {
@@ -50,4 +50,4 @@ export const updateMeter = (entity, laserStrength) => {
   meter.geometry.vertices[4].x = METER_WIDTH * laserStrength;
 
   meter.geometry.verticesNeedUpdate = true;
-}
+};

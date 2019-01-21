@@ -3,11 +3,7 @@ import SceneManager from '../ThreeJSManager';
 import Cube from './Cube';
 import Grid from './Grid';
 import CameraControls from './CameraControls';
-import {
-  getCamera,
-  getRenderer,
-  getScene,
-} from './threeSetup';
+import { getCamera, getRenderer, getScene } from './threeSetup';
 
 const CubeExample = () => {
   const [color, changeColor] = useState('0000ff');
@@ -21,16 +17,8 @@ const CubeExample = () => {
       getScene={getScene}
     >
       <CameraControls />
-      {
-        showGrid &&
-          <Grid />
-      }
-      {
-        showCube &&
-          <Cube
-            color={Number(`0x${color}`)}
-          />
-      }
+      {showGrid && <Grid />}
+      {showCube && <Cube color={Number(`0x${color}`)} />}
       <div
         style={{
           width: '100px',
@@ -44,16 +32,14 @@ const CubeExample = () => {
           }}
         >
           <input
-            type='text'
-            placeholder='enter a hex color'
-            onChange={(e) =>
-              changeColor(e.target.value)
-            }
+            type="text"
+            placeholder="enter a hex color"
+            onChange={e => changeColor(e.target.value)}
           />
 
           <label>
             <input
-              type='checkbox'
+              type="checkbox"
               checked={showGrid}
               onChange={() => toggleShowGrid(!showGrid)}
             />
@@ -62,7 +48,7 @@ const CubeExample = () => {
 
           <label>
             <input
-              type='checkbox'
+              type="checkbox"
               checked={showCube}
               onChange={() => toggleShowCube(!showCube)}
             />
@@ -71,7 +57,7 @@ const CubeExample = () => {
         </div>
       </div>
     </SceneManager>
-  )
-}
+  );
+};
 
 export default CubeExample;

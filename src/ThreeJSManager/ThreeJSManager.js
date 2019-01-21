@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  createContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { createContext, useEffect, useRef, useState } from 'react';
 
 import Canvas from './Canvas';
 import useAnimationFrame from './useAnimationFrame';
@@ -19,7 +14,7 @@ const ThreeJSManager = ({ children, getCamera, getRenderer, getScene }) => {
   const cameraRef = useRef();
   const rendererRef = useRef();
 
-  const {offsetWidth, offsetHeight } = canvasRef.current;
+  const { offsetWidth, offsetHeight } = canvasRef.current;
   const threeContext = {
     scene: sceneRef.current,
     camera: cameraRef.current,
@@ -28,17 +23,14 @@ const ThreeJSManager = ({ children, getCamera, getRenderer, getScene }) => {
   };
 
   // setup scene, camera, and renderer, and store references
-  useEffect(
-    () => {
-      const canvas = canvasRef.current;
-      sceneRef.current = getScene();
-      cameraRef.current = getCamera(canvas);
-      rendererRef.current = getRenderer(canvas);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    sceneRef.current = getScene();
+    cameraRef.current = getCamera(canvas);
+    rendererRef.current = getRenderer(canvas);
 
-      setThreeIsReady(true);
-    },
-    [],
-  );
+    setThreeIsReady(true);
+  }, []);
 
   // update camera and renderer when dimensions change
   useEffect(
@@ -47,38 +39,25 @@ const ThreeJSManager = ({ children, getCamera, getRenderer, getScene }) => {
       cameraRef.current.updateProjectionMatrix();
       rendererRef.current.setSize(offsetWidth, offsetHeight);
     },
-    [
-      offsetWidth,
-      offsetHeight,
-    ],
+    [offsetWidth, offsetHeight]
   );
 
   // set animation frame timer value and rerender the scene
-  useAnimationFrame(
-    (timer) => {
-      updateTimer(timer)
-      rendererRef.current.render(
-        sceneRef.current,
-        cameraRef.current,
-      );
-    }
-  )
+  useAnimationFrame(timer => {
+    updateTimer(timer);
+    rendererRef.current.render(sceneRef.current, cameraRef.current);
+  });
 
   return (
     <>
-      <Canvas
-        ref={canvasRef}
-      />
-      {
-        threeIsReady &&
-          <ThreeJSContext.Provider
-            value={threeContext}
-          >
-            { children }
-          </ThreeJSContext.Provider>
-      }
+      <Canvas ref={canvasRef} />
+      {threeIsReady && (
+        <ThreeJSContext.Provider value={threeContext}>
+          {children}
+        </ThreeJSContext.Provider>
+      )}
     </>
   );
-}
+};
 
 export default ThreeJSManager;

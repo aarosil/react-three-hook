@@ -13,12 +13,12 @@ const CameraControls = () => {
     controls.rotateSpeed = 0.08;
     controls.autoRotate = true;
     controls.autoRotateSpeed = 0.08;
-    controls.maxPolarAngle = Math.PI/2;
+    controls.maxPolarAngle = Math.PI / 2;
     controls.enableKeys = false;
     controls.update();
   });
 
   return null;
-}
+};
 
 export default CameraControls;

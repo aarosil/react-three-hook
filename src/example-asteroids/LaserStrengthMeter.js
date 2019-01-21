@@ -7,17 +7,11 @@ import {
 } from './LaserStrengthMeter.three';
 
 const LaserStrengthMeter = ({ laserStrength }) => {
-  const { getEntity } = useThree(
-    setupMeter,
-    destroyMeter,
-  );
+  const { getEntity } = useThree(setupMeter, destroyMeter);
 
-  useEffect(
-    () => updateMeter(getEntity(), laserStrength),
-    [laserStrength],
-  );
+  useEffect(() => updateMeter(getEntity(), laserStrength), [laserStrength]);
 
   return null;
-}
+};
 
 export default LaserStrengthMeter;

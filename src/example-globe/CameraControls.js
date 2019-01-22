@@ -26,12 +26,14 @@ const CameraControls = forwardRef((props, controlsRef) => {
       controls.autoRotate = true;
       controls.autoRotateSpeed = 0.08;
       controls.enableKeys = false;
+
+      // west coast usa
+      camera.position.x = -73.73;
+      camera.position.y = 107.36;
+      camera.position.z = 117.56;
       controls.update();
 
-      controlsRef.current = {
-        controls,
-        camera,
-      };
+      controlsRef.current = controls;
     },
     [camera, canvas],
   );

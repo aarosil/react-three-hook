@@ -5,7 +5,7 @@ import { useThree } from '../../ThreeJSManager';
 
 var raycaster = new THREE.Raycaster();
 
-const useGlobeControls = (getEntity, getControls, setGlobeCenter) => {
+const useGlobeControls = (getEntity, getControls, setMapCenter) => {
   const canvasRef = useRef();
   const cameraRef = useRef();
   const isMoving = useRef();
@@ -13,9 +13,10 @@ const useGlobeControls = (getEntity, getControls, setGlobeCenter) => {
   useThree(({ camera, canvas }) => {
     canvasRef.current = canvas;
     cameraRef.current = camera;
-  }, []);
+  });
 
-  const normalizedDeviceCoordinates = ({ clientX, clientY }) => {
+  // between -1 and 1 for X,Y over the canvas element
+  const normalizedDeviceCoords = ({ clientX, clientY }) => {
     const bbox = canvasRef.current.getBoundingClientRect();
     return {
       x: ((clientX - bbox.x) / bbox.width) * 2 - 1,
@@ -23,48 +24,64 @@ const useGlobeControls = (getEntity, getControls, setGlobeCenter) => {
     };
   };
 
-  const getGlobeCoordsAtNormalizedDeviceCoordinates = (
-    { x = 0, y = 0 },
-    resetCamera,
-  ) => {
+  // the point on the sphere the pointer is above
+  const spherePointAtDeviceCoords = ({ x = 0, y = 0 }) => {
     raycaster.setFromCamera({ x, y }, cameraRef.current);
     const raycastObject = getEntity();
     const intersects = raycaster.intersectObject(raycastObject);
 
-    if (intersects.length) {
-      const [lat, lon] = mapUtils.coords(intersects[0].point, 100);
-      setGlobeCenter([lat, lon]);
-      if (resetCamera) {
-        const { camera, controls } = getControls();
+    if (intersects.length) return intersects[0].point;
+  };
 
-        const { x, y, z } = cameraRef.current.position;
-        const { x: ix, y: iy, z: iz } = intersects[0].point;
-        var altitude =
-          Math.sqrt(x * x + y * y + z * z) -
-          Math.sqrt(ix * ix + iy * iy + iz * iz);
-        console.log('aLTITUDE: ', altitude);
+  // lat / long of a point on the sphere
+  const globeCoordsAtSpherePoint = (point) => {
+    const { x, y, z } = point;
+    const radius = Math.sqrt(x * x + y * y + z * z);
+    const [lat, lon] = mapUtils.coords(point, radius);
 
-        var coeff = 1 + altitude / Math.sqrt(ix * ix + iy * iy + iz * iz);
+    return [lat, lon];
+  };
 
-        camera.position.x = intersects[0].point.x * coeff;
-        camera.position.y = intersects[0].point.y * coeff;
-        camera.position.z = intersects[0].point.z * coeff;
-        controls.update();
-      }
-    }
+  // focus camera at a given point
+  const pointCameraAtSpherePoint = (point) => {
+    const { x: px, y: py, z: pz } = point;
+    const radius = Math.sqrt(px * px + py * py + pz * pz);
+
+    const { x: cx, y: cy, z: cz, } = cameraRef.current.position;
+    var altitude = Math.sqrt(cx * cx + cy * cy + cz * cz) - radius;
+
+    var coeff = 1 + altitude / radius;
+
+    cameraRef.current.position.x = point.x * coeff;
+    cameraRef.current.position.y = point.y * coeff;
+    cameraRef.current.position.z = point.z * coeff;
+
+    const controls = getControls();
+    controls.update();
   };
 
   // on pointer move
   const handlePointerMove = useRef(() => {
     isMoving.current = true;
-    getGlobeCoordsAtNormalizedDeviceCoordinates({ x: 0, y: 0 });
+
+    const spherePoint = spherePointAtDeviceCoords({ x: 0, y: 0 });
+    const [lat, lon] = globeCoordsAtSpherePoint(spherePoint)
+
+    setMapCenter([lat, lon]);
   });
 
   // on pointer up
   const handlePointerUp = useRef(event => {
     if (!isMoving.current) {
-      const coords = normalizedDeviceCoordinates(event);
-      getGlobeCoordsAtNormalizedDeviceCoordinates(coords, true);
+      const deviceCoords = normalizedDeviceCoords(event);
+      const spherePosition = spherePointAtDeviceCoords(deviceCoords);
+
+      if (spherePosition) {
+        const globeCoords = globeCoordsAtSpherePoint(spherePosition);
+
+        setMapCenter(globeCoords);
+        pointCameraAtSpherePoint(spherePosition);
+      }
     }
 
     canvasRef.current.removeEventListener(
@@ -88,7 +105,6 @@ const useGlobeControls = (getEntity, getControls, setGlobeCenter) => {
   useEffect(
     () => {
       if (!canvasRef.current) return;
-
       canvasRef.current.addEventListener('pointerdown', onPointerDown.current);
 
       return () => {

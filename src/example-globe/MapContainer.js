@@ -10,7 +10,7 @@ const mapConfig = {
   accessToken: process.env.REACT_APP_MAPBOX_TOKEN,
 };
 
-const MapContainer = ({ mapCenter = [37.7, -122.2] }) => {
+const MapContainer = ({ mapCenter = [0, 0] }) => {
   const [lat, lon] = mapCenter;
   const mapRef = useRef();
 
@@ -25,7 +25,7 @@ const MapContainer = ({ mapCenter = [37.7, -122.2] }) => {
       if (!(mapRef.current && mapCenter)) return;
       mapRef.current.panTo(mapCenter);
     },
-    [mapCenter]
+    [mapCenter],
   );
 
   return <div id="map-root" style={{ height: '100vh' }} />;

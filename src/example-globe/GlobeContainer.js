@@ -1,16 +1,11 @@
 import * as THREE from 'three';
 import * as topojson from 'topojson';
 import * as mapUtils from './mapUtils';
-import React, { useRef } from 'react';
 import { useThree } from '../ThreeJSManager';
 import useGlobeControls from './hooks/useGlobeControls';
-import CameraControls from './CameraControls';
 
-const Globe = ({ mapData, radius = 100, setMapCenter }) => {
-  const controlsRef = useRef();
-  const getControls = () => controlsRef.current;
-
-  const { getEntity } = useThree(({ scene, canvas }) => {
+const GlobeContainer = ({ mapData, radius = 100, setMapCenter, getControls }) => {
+  const { getEntity } = useThree(({ scene, camera }) => {
     const landMesh = topojson.mesh(mapData, mapData.objects.countries);
     const land = mapUtils.wireframe(
       landMesh,
@@ -43,7 +38,7 @@ const Globe = ({ mapData, radius = 100, setMapCenter }) => {
 
   useGlobeControls(getEntity, getControls, setMapCenter);
 
-  return <CameraControls ref={controlsRef} />;
+  return null;
 };
 
-export default Globe;
+export default GlobeContainer;

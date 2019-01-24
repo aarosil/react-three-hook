@@ -7,7 +7,7 @@ export const getCamera = ({ offsetWidth, offsetHeight }) => {
     0.1,
     1000
   );
-  camera.position.set(150, 100, 175);
+  camera.position.set(120, 80, 140);
 
   return camera;
 };

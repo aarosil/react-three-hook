@@ -10,25 +10,50 @@ const mapConfig = {
   accessToken: process.env.REACT_APP_MAPBOX_TOKEN,
 };
 
-const MapContainer = ({ mapCenter = [0, 0] }) => {
+const MapContainer = ({ mapCenter, setMapCenter }) => {
   const [lat, lon] = mapCenter;
   const mapRef = useRef();
+  const shouldPropagateChange = useRef(true);
+
+  const onMoveRef = useRef(() => {
+    if (shouldPropagateChange.current) {
+      const { lat, lng } = mapRef.current.getCenter();
+      if (shouldPropagateChange.current) setMapCenter([lat, lng]);
+    }
+  });
+
+  const onClickRef = useRef(({ originalEvent }) => {
+    const { lat, lng } = mapRef.current.mouseEventToLatLng(originalEvent);
+    setMapCenter([lat, lng]);
+  });
+
+  const onMoveEndRef = useRef(() => shouldPropagateChange.current = true);
 
   useEffect(() => {
     const { template, ...config } = mapConfig;
-    mapRef.current = window.L.map('map-root').setView([lat, lon], 8);
-    window.L.tileLayer(template, config).addTo(mapRef.current);
+    const map = window.L.map('map-root').setView([lat, lon], 8);
+    window.L.tileLayer(template, config).addTo(map);
+
+    map.on('move', onMoveRef.current);
+    map.on('moveend', onMoveEndRef.current);
+    map.on('click', onClickRef.current);
+
+    mapRef.current = map;
   }, []);
 
   useEffect(
     () => {
-      if (!(mapRef.current && mapCenter)) return;
+      if (!(mapRef.current)) return;
+
+      shouldPropagateChange.current = false;
       mapRef.current.panTo(mapCenter);
     },
     [mapCenter],
   );
 
-  return <div id="map-root" style={{ height: '100vh' }} />;
+  return (
+    <div id="map-root" style={{ height: '100vh' }} />
+  );
 };
 
 export default MapContainer;

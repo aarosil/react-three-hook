@@ -7,7 +7,7 @@ import CameraControls from './CameraControls';
 import { getCamera, getRenderer, getScene } from './threeSetup';
 
 const MapExample = () => {
-  const controlsRef = useRef();
+  const cameraControlsRef = useRef();
   const thaBay = [37.7, -122.2]
   const mapData = useWorldMap();
   const [mapCenter, setMapCenter] = useState(thaBay);
@@ -32,7 +32,7 @@ const MapExample = () => {
             width: '50vw',
           }}
         >
-          <MapContainer mapCenter={mapCenter} />
+          <MapContainer mapCenter={mapCenter} setMapCenter={setMapCenter} />
         </div>
         <div style={{ flexGrow: 1, position: 'relative' }}>
           <SceneManager
@@ -42,13 +42,13 @@ const MapExample = () => {
           >
             {mapData && (
               <GlobeContainer
-                getControls={() => controlsRef.current}
+                getCameraControls={() => cameraControlsRef.current}
                 mapData={mapData}
                 setMapCenter={setMapCenter}
-                center={thaBay}
+                mapCenter={mapCenter}
               />
             )}
-          <CameraControls ref={controlsRef} />;
+            <CameraControls ref={cameraControlsRef} />;
           </SceneManager>
         </div>
       </div>

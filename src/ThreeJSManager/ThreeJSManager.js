@@ -6,7 +6,13 @@ import useAnimationFrame from './useAnimationFrame';
 
 export const ThreeJSContext = createContext();
 
-const ThreeJSManager = ({ children, getCamera, getRenderer, getScene }) => {
+const ThreeJSManager = ({
+  children,
+  getCamera,
+  getRenderer,
+  getScene,
+  canvasStyle,
+}) => {
   const [threeIsReady, setThreeIsReady] = useState(false);
   const [timer, updateTimer] = useState(0);
   const canvasRef = useRef({});
@@ -39,7 +45,7 @@ const ThreeJSManager = ({ children, getCamera, getRenderer, getScene }) => {
       cameraRef.current.updateProjectionMatrix();
       rendererRef.current.setSize(offsetWidth, offsetHeight);
     },
-    [offsetWidth, offsetHeight]
+    [offsetWidth, offsetHeight],
   );
 
   // set animation frame timer value and rerender the scene
@@ -50,7 +56,7 @@ const ThreeJSManager = ({ children, getCamera, getRenderer, getScene }) => {
 
   return (
     <>
-      <Canvas ref={canvasRef} />
+      <Canvas ref={canvasRef} style={canvasStyle} />
       {threeIsReady && (
         <ThreeJSContext.Provider value={threeContext}>
           {children}

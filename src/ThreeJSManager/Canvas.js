@@ -1,12 +1,10 @@
 import React from 'react';
 import { forwardRef, useEffect } from 'react';
 
-const Canvas = (_, ref) => {
+const Canvas = ({ style }, ref) => {
   const onWindowResize = () => {
-    ref.current.setAttribute(
-      'style',
-      'z-index: -1; position: absolute; height: 100%; width: 100%;'
-    );
+    ref.current.style.height = style.height;
+    ref.current.style.width = style.width;
   };
 
   useEffect(() => {
@@ -17,14 +15,7 @@ const Canvas = (_, ref) => {
   }, []);
 
   return (
-    <canvas
-      ref={ref}
-      style={{
-        zIndex: -1,
-        height: '100%',
-        width: '100%',
-      }}
-    />
+    <canvas ref={ref} height={style.height} width={style.width} style={style} />
   );
 };
 

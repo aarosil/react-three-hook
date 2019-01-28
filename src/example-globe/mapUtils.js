@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 
+const raycaster = new THREE.Raycaster();
+
 export function coords(position, radius) {
   const { x, y, z } = position;
   const lat = Math.asin(y / radius) / (Math.PI / 180);
@@ -21,6 +23,7 @@ export function vertex([longitude, latitude], radius) {
 
 export function wireframe(multilinestring, radius, material) {
   const geometry = new THREE.Geometry();
+
   for (const P of multilinestring.coordinates) {
     for (let p0, p1 = vertex(P[0], radius), i = 1; i < P.length; ++i) {
       geometry.vertices.push((p0 = p1), (p1 = vertex(P[i], radius)));
@@ -54,4 +57,48 @@ export function graticule10() {
       Array.from(range(-80, 80 + 1e-6, 10), y => parallel(y, -180, 180)),
     ),
   };
+}
+
+// returns between -1 and 1 for X,Y over the canvas element
+export function normalizedDeviceCoords(canvas, { clientX, clientY }) {
+  const bbox = canvas.getBoundingClientRect();
+  return {
+    x: ((clientX - bbox.x) / bbox.width) * 2 - 1,
+    y: -(((clientY - bbox.y) / bbox.height) * 2) + 1,
+  };
+}
+
+export function canvasCoords(camera, canvas, vector) {
+  const { offsetWidth, offsetHeight } = canvas;
+  camera.updateMatrixWorld();
+  const position = vector.clone();
+  const { x, y } = position.project(camera);
+
+  return {
+    x: ((x + 1) * offsetWidth) / 2 + 1,
+    y: ((-y + 1) * offsetHeight) / 2 + 1,
+  };
+}
+
+// returns the point on the sphere the pointer is above
+export function spherePositionAtDeviceCoords(sphere, camera, { x = 0, y = 0 }) {
+  raycaster.setFromCamera({ x, y }, camera);
+  const intersects = raycaster.intersectObject(sphere);
+
+  if (intersects.length) return intersects[0].point;
+}
+
+export function getCameraAltitude(camera) {
+  const { x, y, z } = camera.position;
+  return Math.sqrt(x * x + y * y + z * z);
+}
+
+// focuses camera at a given point
+export function pointCameraAtSpherePosition(camera, controls, point, altitude) {
+  const { x, y, z } = point;
+  const radius = Math.sqrt(x * x + y * y + z * z);
+  const coeff = 1 + (altitude - radius) / radius;
+
+  camera.position.copy(point.multiplyScalar(coeff));
+  controls.update();
 }

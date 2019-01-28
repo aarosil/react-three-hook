@@ -27,7 +27,7 @@ const MapContainer = ({ mapCenter, setMapCenter }) => {
     setMapCenter([lat, lng]);
   });
 
-  const onMoveEndRef = useRef(() => shouldPropagateChange.current = true);
+  const onMoveEndRef = useRef(() => (shouldPropagateChange.current = true));
 
   useEffect(() => {
     const { template, ...config } = mapConfig;
@@ -37,13 +37,14 @@ const MapContainer = ({ mapCenter, setMapCenter }) => {
     map.on('move', onMoveRef.current);
     map.on('moveend', onMoveEndRef.current);
     map.on('click', onClickRef.current);
+    map.on('mousemove', () => console.log('pointer moving!'));
 
     mapRef.current = map;
   }, []);
 
   useEffect(
     () => {
-      if (!(mapRef.current)) return;
+      if (!mapRef.current) return;
 
       shouldPropagateChange.current = false;
       mapRef.current.panTo(mapCenter);
@@ -51,9 +52,7 @@ const MapContainer = ({ mapCenter, setMapCenter }) => {
     [mapCenter],
   );
 
-  return (
-    <div id="map-root" style={{ height: '100vh' }} />
-  );
+  return <div id="map-root" style={{ height: '100vh' }} />;
 };
 
 export default MapContainer;

@@ -4,8 +4,8 @@ export const getCamera = ({ offsetWidth, offsetHeight }) => {
   const camera = new THREE.PerspectiveCamera(
     75,
     offsetWidth / offsetHeight,
-    0.1,
-    1000
+    1,
+    1000,
   );
   camera.position.set(120, 80, 140);
 
